@@ -7,6 +7,7 @@ using MovieApp.Data;
 
 namespace MovieApp.Migrations
 {
+    //created with PMC
     [DbContext(typeof(MarvelUniverseDbContext))]
     partial class MarvelUniverseDbContextModelSnapshot : ModelSnapshot
     {

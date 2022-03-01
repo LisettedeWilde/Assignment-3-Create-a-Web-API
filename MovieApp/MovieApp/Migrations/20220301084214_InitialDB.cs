@@ -2,6 +2,7 @@
 
 namespace MovieApp.Migrations
 {
+    //created with PMC
     public partial class InitialDB : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)

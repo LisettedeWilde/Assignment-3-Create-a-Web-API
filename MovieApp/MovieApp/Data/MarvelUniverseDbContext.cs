@@ -9,6 +9,7 @@ using MovieApp.Models;
 
 namespace MovieApp.Data
 {
+    //Context
     public class MarvelUniverseDbContext : DbContext
     {
         public DbSet<Movie> Movies { get; set; }

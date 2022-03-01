@@ -8,6 +8,7 @@ using MovieApp.Data;
 
 namespace MovieApp.Migrations
 {
+    //created with PMC
     [DbContext(typeof(MarvelUniverseDbContext))]
     [Migration("20220301084214_InitialDB")]
     partial class InitialDB

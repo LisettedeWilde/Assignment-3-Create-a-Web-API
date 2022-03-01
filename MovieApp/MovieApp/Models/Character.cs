@@ -8,6 +8,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MovieApp.Models
 {
+    //Method for creating a table for Character
     [Table("Character")]
     public class Character
     {

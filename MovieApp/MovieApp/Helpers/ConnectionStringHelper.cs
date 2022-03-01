@@ -7,7 +7,7 @@ using Microsoft.Data.SqlClient;
 
 namespace MovieApp.Helpers
 {
-  
+        //Connection to MSSM
         public class ConnectionStringHelper
         {
             public static string GetConnectionString()
