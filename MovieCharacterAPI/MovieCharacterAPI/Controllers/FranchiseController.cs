@@ -28,7 +28,7 @@ namespace MovieCharacterAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<FranchiseReadDTO>>> GetAllFranchises()
         {
-            var franchises = await _context.Franchise.Include(f => f.Movies).ThenInclude(m => m.Characters).ToListAsync();
+            var franchises = await _context.Franchise.ToListAsync();
 
             var readFranchises = _mapper.Map<List<FranchiseReadDTO>>(franchises);
 
@@ -132,6 +132,7 @@ namespace MovieCharacterAPI.Controllers
                 return BadRequest();
 
             Franchise domainFranchise = _mapper.Map<Franchise>(franchise);
+            _context.Entry(domainFranchise).State = EntityState.Modified;
 
             try
             {

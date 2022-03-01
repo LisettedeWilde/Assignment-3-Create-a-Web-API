@@ -29,11 +29,11 @@ namespace MovieCharacterAPI.Controllers
         public async Task<ActionResult<IEnumerable<MovieReadDTO>>> GetAllMovies()
         {
             // get all movies from database
-            var movies = await _context.Movie.Include(m => m.Characters).ToListAsync();
-            //var movies = _context.Movie.ToList();
+            var movies = await _context.Movie.ToListAsync();
+
             // convert movies object to movieReadDTO
             var readMovies = _mapper.Map<List<MovieReadDTO>>(movies);
-            //var readMovies = _mapper.Map<List<MovieReadDTO>>(movies);
+
             // return movies
             return Ok(readMovies);
         }
@@ -61,9 +61,7 @@ namespace MovieCharacterAPI.Controllers
             if (movie == null)
                 return NotFound();
 
-            // TODo: check if it still works
             var characters = movie.Characters;
-            //List<Character> characters = movie.Characters.ToList<Character>();
 
             var readCharacters = _mapper.Map<List<CharacterReadDTO>>(characters);
 

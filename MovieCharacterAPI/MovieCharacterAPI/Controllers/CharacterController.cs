@@ -26,7 +26,7 @@ namespace MovieCharacterAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CharacterReadDTO>>> GetAllCharacters()
         {
-            var characters = await _context.Character.Include(c => c.Movies).ToListAsync();
+            var characters = await _context.Character.ToListAsync();
 
             var readCharacters = _mapper.Map<List<CharacterReadDTO>>(characters);
 
