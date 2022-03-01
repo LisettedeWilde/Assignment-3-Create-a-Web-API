@@ -9,6 +9,7 @@ using MovieCharacterAPI.Models.Domain;
 using Microsoft.EntityFrameworkCore;
 using MovieCharacterAPI.Models.DTOs.MovieDTOs;
 using MovieCharacterAPI.Models.DTOs.CharacterDTOs;
+using System.Threading.Tasks;
 
 namespace MovieCharacterAPI.Controllers
 {
@@ -25,9 +26,9 @@ namespace MovieCharacterAPI.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<FranchiseReadDTO>> GetAllFranchises()
+        public async Task<ActionResult<IEnumerable<FranchiseReadDTO>>> GetAllFranchises()
         {
-            var franchises = _context.Franchise.ToList();
+            var franchises = await _context.Franchise.Include(f => f.Movies).ThenInclude(m => m.Characters).ToListAsync();
 
             var readFranchises = _mapper.Map<List<FranchiseReadDTO>>(franchises);
 
@@ -35,9 +36,9 @@ namespace MovieCharacterAPI.Controllers
         }
 
         [HttpGet("{franchiseId}")]
-        public ActionResult<FranchiseReadDTO> GetById(int franchiseId)
+        public async Task<ActionResult<FranchiseReadDTO>> GetById(int franchiseId)
         {
-            var franchise = _context.Franchise.Find(franchiseId);
+            var franchise = await _context.Franchise.FindAsync(franchiseId);
 
             if (franchise == null)
                 return NotFound();
@@ -49,10 +50,9 @@ namespace MovieCharacterAPI.Controllers
 
         // Get all movies in franchise
         [HttpGet("GetMoviesInFranchise/{franchiseId}")]
-        public ActionResult<IEnumerable<MovieReadDTO>> GetMoviesInFranchise(int franchiseId)
+        public async Task<ActionResult<IEnumerable<MovieReadDTO>>> GetMoviesInFranchise(int franchiseId)
         {
-            //var franchise = _context.Franchise.Find(franchiseId);
-            var franchise = _context.Franchise.Include(f => f.Movies).Where(f => f.FranchiseId == franchiseId).Single();
+            var franchise = await _context.Franchise.Include(f => f.Movies).Where(f => f.FranchiseId == franchiseId).SingleAsync();
 
             if (franchise == null)
                 return NotFound();
@@ -66,9 +66,9 @@ namespace MovieCharacterAPI.Controllers
 
         // Get all characters in franchise
         [HttpGet("GetCharactersInFranchise/{franchiseId}")]
-        public ActionResult<IEnumerable<CharacterReadDTO>> GetCharactersInFranchise(int franchiseId)
+        public async Task<ActionResult<IEnumerable<CharacterReadDTO>>> GetCharactersInFranchise(int franchiseId)
         {
-            var franchise = _context.Franchise.Include(f => f.Movies).ThenInclude(m => m.Characters).Where(f => f.FranchiseId == franchiseId).Single();
+            var franchise = await _context.Franchise.Include(f => f.Movies).ThenInclude(m => m.Characters).Where(f => f.FranchiseId == franchiseId).SingleAsync();
 
             if (franchise == null)
                 return NotFound();
@@ -92,14 +92,14 @@ namespace MovieCharacterAPI.Controllers
         }
 
         [HttpPost]
-        public ActionResult<Franchise> PostFranchise([FromBody] FranchiseCreateDTO franchiseCreateDTO)
+        public async Task<ActionResult<Franchise>> PostFranchise([FromBody] FranchiseCreateDTO franchiseCreateDTO)
         {
             var franchise = _mapper.Map<Franchise>(franchiseCreateDTO);
 
             try
             {
                 _context.Franchise.Add(franchise);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
             catch //TODO: add exception
             {
@@ -112,54 +112,65 @@ namespace MovieCharacterAPI.Controllers
         }
 
         [HttpDelete("{franchiseId}")]
-        public ActionResult DeleteFranchise(int franchiseId)
+        public async Task<ActionResult> DeleteFranchise(int franchiseId)
         {
-            var franchise = _context.Franchise.Find(franchiseId);
+            var franchise = await _context.Franchise.FindAsync(franchiseId);
 
             if (franchise == null)
                 return NotFound();
 
             _context.Franchise.Remove(franchise);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
         [HttpPut("{franchiseId}")]
-        public ActionResult UpdateFranchise(int franchiseId, [FromBody] Franchise franchise)
+        public async Task<ActionResult> UpdateFranchise(int franchiseId, [FromBody] FranchiseEditDTO franchise)
         {
             if (franchiseId != franchise.FranchiseId)
                 return BadRequest();
 
-            _context.Entry(franchise).State = EntityState.Modified;
-            _context.SaveChanges();
+            Franchise domainFranchise = _mapper.Map<Franchise>(franchise);
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (domainFranchise == null)
+                    return NotFound();
+                else
+                    throw;
+            }
 
             return NoContent();
         }
 
         // TODO: Update movies in franchise
         [HttpPut("UpdateMovies/{franchiseId}")]
-        public ActionResult UpdateMoviesInFranchise(int franchiseId, [FromBody] int[] movieIds)
+        public async Task<ActionResult> UpdateMoviesInFranchise(int franchiseId, [FromBody] int[] movieIds)
         {
-            var newFranchise = _context.Franchise.Find(franchiseId);
+            var franchiseToUpdate = await _context.Franchise.Include(f => f.Movies).Where(f => f.FranchiseId == franchiseId).SingleAsync();
 
-            List<Movie> movies = new List<Movie>();
-            foreach (int id in movieIds)
+            if (franchiseToUpdate == null)
+                return NotFound();
+
+            List<Movie> movies = new();
+            foreach (int movieId in movieIds)
             {
-                var movie = _context.Movie.Find(id);
-
+                Movie movie = await _context.Movie.FindAsync(movieId);
                 if (movie == null)
-                    return NotFound();
+                    return BadRequest("Movie doesn't exist");
                 movies.Add(movie);
             }
 
-            newFranchise.Movies = movies;
-            _context.Franchise.Update(newFranchise);
-            //_context.Entry(newFranchise).State = EntityState.Modified;
+            franchiseToUpdate.Movies = movies;
 
             try
             {
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
             catch
             {

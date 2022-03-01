@@ -61,7 +61,9 @@ namespace MovieCharacterAPI.Controllers
             if (movie == null)
                 return NotFound();
 
-            List<Character> characters = movie.Characters.ToList<Character>();
+            // TODo: check if it still works
+            var characters = movie.Characters;
+            //List<Character> characters = movie.Characters.ToList<Character>();
 
             var readCharacters = _mapper.Map<List<CharacterReadDTO>>(characters);
 
@@ -80,7 +82,7 @@ namespace MovieCharacterAPI.Controllers
                 _context.Movie.Add(movie);
                 await _context.SaveChangesAsync();
             }
-            catch
+            catch // TODO: add exception
             {
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }

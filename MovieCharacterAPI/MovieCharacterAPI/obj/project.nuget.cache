@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "qf8/waY5JyjXMSkFs0SCQS1wRHXFh3LW7SOSp2JaJGKXOhqlPFqIAcOhAboppnVNT86wp5QgfVqAsiDZ7Ln5oQ==",
+  "dgSpecHash": "5MBitpB36wWO/+dLokqNNfHuMRZRh5rilBt8VfQGtWrjuZYF6WPzxO+jZwD2o48P/yUthowTbPA7fwItZcELEA==",
   "success": true,
-  "projectFilePath": "X:\\Noroff\\Noroff Assignments\\Assignments - Backend .NET\\Assignment 3 - Web API in ASP.NET Core\\MovieCharacterAPI\\MovieCharacterAPI\\MovieCharacterAPI.csproj",
+  "projectFilePath": "X:\\Noroff\\Noroff Assignments\\Assignments - Backend .NET\\Assignment 3 - Web API in ASP.NET Core\\Assignment-3-Create-a-Web-API\\MovieCharacterAPI\\MovieCharacterAPI\\MovieCharacterAPI.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Lisette\\.nuget\\packages\\automapper\\11.0.0\\automapper.11.0.0.nupkg.sha512",
     "C:\\Users\\Lisette\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\11.0.0\\automapper.extensions.microsoft.dependencyinjection.11.0.0.nupkg.sha512",

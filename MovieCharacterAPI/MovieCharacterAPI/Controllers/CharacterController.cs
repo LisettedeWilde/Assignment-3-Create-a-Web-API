@@ -7,6 +7,7 @@ using MovieCharacterAPI.Models.DTOs.CharacterDTOs;
 using MovieCharacterAPI.Models.Domain;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace MovieCharacterAPI.Controllers
 {
@@ -23,9 +24,9 @@ namespace MovieCharacterAPI.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<CharacterReadDTO>> GetAllCharacters()
+        public async Task<ActionResult<IEnumerable<CharacterReadDTO>>> GetAllCharacters()
         {
-            var characters = _context.Character.ToList();
+            var characters = await _context.Character.Include(c => c.Movies).ToListAsync();
 
             var readCharacters = _mapper.Map<List<CharacterReadDTO>>(characters);
 
@@ -33,9 +34,9 @@ namespace MovieCharacterAPI.Controllers
         }
 
         [HttpGet("{characterId}")]
-        public ActionResult<CharacterReadDTO> GetById(int characterId)
+        public async Task<ActionResult<CharacterReadDTO>> GetById(int characterId)
         {
-            var character = _context.Character.Find(characterId);
+            var character = await _context.Character.FindAsync(characterId);
 
             if (character == null)
                 return NotFound();
@@ -46,14 +47,14 @@ namespace MovieCharacterAPI.Controllers
         }
 
         [HttpPost]
-        public ActionResult<Character> PostCharacter([FromBody] CharacterCreateDTO characterCreateDTO)
+        public async Task<ActionResult<Character>> PostCharacter([FromBody] CharacterCreateDTO characterCreateDTO)
         {
             var character = _mapper.Map<Character>(characterCreateDTO);
 
             try
             {
                 _context.Character.Add(character);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
             catch //TODO: add exception
             {
@@ -66,32 +67,40 @@ namespace MovieCharacterAPI.Controllers
         }
 
         [HttpDelete("{characterId}")]
-        public ActionResult DeleteCharacter(int characterId)
+        public async Task<ActionResult> DeleteCharacter(int characterId)
         {
-            var character = _context.Character.Find(characterId);
+            var character = await _context.Character.FindAsync(characterId);
 
             if (character == null)
                 return NotFound();
 
             _context.Character.Remove(character);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
         [HttpPut("{characterId}")]
-        public ActionResult UpdateCharacter(int characterId, [FromBody] Character character)
+        public async Task<ActionResult> UpdateCharacter(int characterId, [FromBody] CharacterEditDTO character)
         {
-            var oldCharacter = _context.Character.Find(characterId);
-
-            if (oldCharacter == null)
-                return NotFound();
-
             if (characterId != character.CharacterId)
                 return BadRequest();
 
-            _context.Entry(character).State = EntityState.Modified;
-            _context.SaveChanges();
+            Character domainCharacter = _mapper.Map<Character>(character);
+
+            _context.Entry(domainCharacter).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (domainCharacter == null)
+                    return NotFound();
+                else
+                    throw;
+            }
 
             return NoContent();
         }
