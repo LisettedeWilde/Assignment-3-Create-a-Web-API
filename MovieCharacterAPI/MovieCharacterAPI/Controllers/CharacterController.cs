@@ -8,11 +8,15 @@ using MovieCharacterAPI.Models.Domain;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Net.Mime;
 
 namespace MovieCharacterAPI.Controllers
 {
     [Route("api/Characters")]
-    [ApiController]
+    [ApiController] //TODO: edit Swagger documentation
+    [Produces(MediaTypeNames.Application.Json)]
+    [Consumes(MediaTypeNames.Application.Json)]
+    [ApiConventionType(typeof(DefaultApiConventions))]
     public class CharacterController : ControllerBase
     {
         private readonly MovieCharacterDbContext _context;
@@ -23,6 +27,10 @@ namespace MovieCharacterAPI.Controllers
             _mapper = mapper;
         }
 
+        /// <summary>
+        /// Fetches all the characters from the database
+        /// </summary>
+        /// <returns>a list of characters</returns>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CharacterReadDTO>>> GetAllCharacters()
         {
@@ -33,6 +41,11 @@ namespace MovieCharacterAPI.Controllers
             return Ok(readCharacters);
         }
 
+        /// <summary>
+        /// Gets a specific character by their id
+        /// </summary>
+        /// <param name="characterId">The id of the character to be fetched</param>
+        /// <returns>A character</returns>
         [HttpGet("{characterId}")]
         public async Task<ActionResult<CharacterReadDTO>> GetById(int characterId)
         {
@@ -46,6 +59,11 @@ namespace MovieCharacterAPI.Controllers
             return Ok(characterReadDTO);
         }
 
+        /// <summary>
+        /// Adds a new character to the database
+        /// </summary>
+        /// <param name="characterCreateDTO">A character object</param>
+        /// <returns>The character that has been added to the database</returns>
         [HttpPost]
         public async Task<ActionResult<Character>> PostCharacter([FromBody] CharacterCreateDTO characterCreateDTO)
         {
@@ -66,8 +84,14 @@ namespace MovieCharacterAPI.Controllers
             return CreatedAtAction("GetById", new { CharacterId = newCharacter.CharacterId }, character);
         }
 
+        /// <summary>
+        /// Deletes a character from the database
+        /// </summary>
+        /// <param name="characterId">Id of the character that needs to be deleted</param>
+        /// <returns></returns>
         [HttpDelete("{characterId}")]
-        public async Task<ActionResult> DeleteCharacter(int characterId)
+        public async Task<ActionResult> DeleteCharacter(int characterId) // TODO: Check DTO
+            //TODO: check if foreign keys are not deleted
         {
             var character = await _context.Character.FindAsync(characterId);
 
@@ -80,6 +104,12 @@ namespace MovieCharacterAPI.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Updates a character
+        /// </summary>
+        /// <param name="characterId">Id of the character that needs to be updated</param>
+        /// <param name="character">A character object which replaces the original character object in the database</param>
+        /// <returns></returns>
         [HttpPut("{characterId}")]
         public async Task<ActionResult> UpdateCharacter(int characterId, [FromBody] CharacterEditDTO character)
         {

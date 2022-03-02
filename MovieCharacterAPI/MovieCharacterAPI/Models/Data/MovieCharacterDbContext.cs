@@ -20,7 +20,7 @@ namespace MovieCharacterAPI.Models.Data
             modelBuilder.Entity<Character>().HasData(SeedHelper.GetCharacterSeeds());
             modelBuilder.Entity<Movie>().HasData(SeedHelper.GetMovieSeeds());
 
-            modelBuilder.Entity<Character>()
+            modelBuilder.Entity<Character>() // TODO: put in method in seedhelper class
                 .HasMany(p => p.Movies)
                 .WithMany(m => m.Characters)
                 .UsingEntity<Dictionary<string, object>>(
@@ -38,12 +38,6 @@ namespace MovieCharacterAPI.Models.Data
                         new { CharacterId = 5, MovieId = 3 }
                         );
                 });
-
-            //modelBuilder.Entity<Franchise>()
-            //    .HasMany(p => p.Movies)
-            //    .WithOne(m => m.Franchise)
-            //    .
-
         }
     }
 }

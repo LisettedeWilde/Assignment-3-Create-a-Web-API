@@ -10,11 +10,15 @@ using Microsoft.EntityFrameworkCore;
 using MovieCharacterAPI.Models.DTOs.MovieDTOs;
 using MovieCharacterAPI.Models.DTOs.CharacterDTOs;
 using System.Threading.Tasks;
+using System.Net.Mime;
 
 namespace MovieCharacterAPI.Controllers
 {
     [Route("api/Franchises")]
-    [ApiController]
+    [ApiController] //TODO: edit Swagger documentation
+    [Produces(MediaTypeNames.Application.Json)]
+    [Consumes(MediaTypeNames.Application.Json)]
+    [ApiConventionType(typeof(DefaultApiConventions))]
     public class FranchiseController : ControllerBase
     {
         private readonly MovieCharacterDbContext _context;
@@ -25,6 +29,10 @@ namespace MovieCharacterAPI.Controllers
             _mapper = mapper;
         }
 
+        /// <summary>
+        /// Fetches all the franchises
+        /// </summary>
+        /// <returns>A list of franchises</returns>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<FranchiseReadDTO>>> GetAllFranchises()
         {
@@ -35,6 +43,11 @@ namespace MovieCharacterAPI.Controllers
             return Ok(readFranchises);
         }
 
+        /// <summary>
+        /// Gets a specific franchise by their id
+        /// </summary>
+        /// <param name="franchiseId">The id of the franchise to be fetched</param>
+        /// <returns>A franchise object</returns>
         [HttpGet("{franchiseId}")]
         public async Task<ActionResult<FranchiseReadDTO>> GetById(int franchiseId)
         {
@@ -42,13 +55,17 @@ namespace MovieCharacterAPI.Controllers
 
             if (franchise == null)
                 return NotFound();
-
+           
             var franchiseReadDTO = _mapper.Map<FranchiseReadDTO>(franchise);
 
             return Ok(franchiseReadDTO);
         }
 
-        // Get all movies in franchise
+        /// <summary>
+        /// Fetches all the movies in a specific franchise
+        /// </summary>
+        /// <param name="franchiseId">A franchise id</param>
+        /// <returns>A list of movies</returns>
         [HttpGet("GetMoviesInFranchise/{franchiseId}")]
         public async Task<ActionResult<IEnumerable<MovieReadDTO>>> GetMoviesInFranchise(int franchiseId)
         {
@@ -64,7 +81,11 @@ namespace MovieCharacterAPI.Controllers
             return Ok(readMovies);
         }
 
-        // Get all characters in franchise
+        /// <summary>
+        /// Fetches all the characters in a specific franchise
+        /// </summary>
+        /// <param name="franchiseId">A franchise id</param>
+        /// <returns>A list of characters</returns>
         [HttpGet("GetCharactersInFranchise/{franchiseId}")]
         public async Task<ActionResult<IEnumerable<CharacterReadDTO>>> GetCharactersInFranchise(int franchiseId)
         {
@@ -91,6 +112,11 @@ namespace MovieCharacterAPI.Controllers
             return Ok(readCharacters);
         }
 
+        /// <summary>
+        /// Adds a new franchise to the database
+        /// </summary>
+        /// <param name="franchiseCreateDTO">A franchise object</param>
+        /// <returns>The franchise that has been added to the database</returns>
         [HttpPost]
         public async Task<ActionResult<Franchise>> PostFranchise([FromBody] FranchiseCreateDTO franchiseCreateDTO)
         {
@@ -111,6 +137,11 @@ namespace MovieCharacterAPI.Controllers
             return CreatedAtAction("GetById", new { franchiseId = newFranchise.FranchiseId }, franchise);
         }
 
+        /// <summary>
+        /// Deletes a franchise from the databse
+        /// </summary>
+        /// <param name="franchiseId">Id of the franchise that needs to be deleted</param>
+        /// <returns></returns>
         [HttpDelete("{franchiseId}")]
         public async Task<ActionResult> DeleteFranchise(int franchiseId)
         {
@@ -125,6 +156,12 @@ namespace MovieCharacterAPI.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Updates a franchise
+        /// </summary>
+        /// <param name="franchiseId">Id of the franchise that needs to be updated</param>
+        /// <param name="franchise">A franchise object which replaces the original franchise object in the database</param>
+        /// <returns></returns>
         [HttpPut("{franchiseId}")]
         public async Task<ActionResult> UpdateFranchise(int franchiseId, [FromBody] FranchiseEditDTO franchise)
         {
@@ -149,7 +186,12 @@ namespace MovieCharacterAPI.Controllers
             return NoContent();
         }
 
-        // TODO: Update movies in franchise
+        /// <summary>
+        /// Updates the movies in a franchise
+        /// </summary>
+        /// <param name="franchiseId">Id of the franchise that needs to be updated</param>
+        /// <param name="movieIds">A list of movieids which will replace the currect movies associated with the franchise</param>
+        /// <returns></returns>
         [HttpPut("UpdateMovies/{franchiseId}")]
         public async Task<ActionResult> UpdateMoviesInFranchise(int franchiseId, [FromBody] int[] movieIds)
         {

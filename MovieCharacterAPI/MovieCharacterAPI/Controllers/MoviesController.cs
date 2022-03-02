@@ -10,11 +10,15 @@ using MovieCharacterAPI.Models.DTOs.MovieDTOs;
 using MovieCharacterAPI.Models.Domain;
 using MovieCharacterAPI.Models.DTOs.CharacterDTOs;
 using Microsoft.EntityFrameworkCore;
+using System.Net.Mime;
 
 namespace MovieCharacterAPI.Controllers
 {
     [Route("api/Movies")]
-    [ApiController]
+    [ApiController] //TODO: edit Swagger documentation
+    [Produces(MediaTypeNames.Application.Json)]
+    [Consumes(MediaTypeNames.Application.Json)]
+    [ApiConventionType(typeof(DefaultApiConventions))]
     public class MovieController : ControllerBase
     {
         private readonly MovieCharacterDbContext _context;
@@ -25,6 +29,10 @@ namespace MovieCharacterAPI.Controllers
             _mapper = mapper;
         }
 
+        /// <summary>
+        /// Fetches all the movies
+        /// </summary>
+        /// <returns>a list of movies</returns>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<MovieReadDTO>>> GetAllMovies()
         {
@@ -38,6 +46,11 @@ namespace MovieCharacterAPI.Controllers
             return Ok(readMovies);
         }
 
+        /// <summary>
+        /// Gets a specific movie by their id
+        /// </summary>
+        /// <param name="movieId">The id of the movie to be fetched</param>
+        /// <returns>A movie</returns>
         [HttpGet("{movieId}")]
         public async Task<ActionResult<MovieReadDTO>> GetById(int movieId)
         {
@@ -52,7 +65,11 @@ namespace MovieCharacterAPI.Controllers
             return Ok(movieReadDTO);
         }
 
-        // Get all characters in a movie
+        /// <summary>
+        /// Fetches all the characters in a specific movie
+        /// </summary>
+        /// <param name="movieId">The id of the movie of which the characters need to be fetched</param>
+        /// <returns>A list of characters</returns>
         [HttpGet("GetCharactersInMovie/{movieId}")]
         public async Task<ActionResult<IEnumerable<CharacterReadDTO>>> GetCharactersInMovie(int movieId)
         {
@@ -68,6 +85,11 @@ namespace MovieCharacterAPI.Controllers
             return Ok(readCharacters);
         }
 
+        /// <summary>
+        /// Adds a new movie to the database
+        /// </summary>
+        /// <param name="movieCreateDTO">A movie object</param>
+        /// <returns>The movie that has been added to the database</returns>
         [HttpPost]
         public async Task<ActionResult<Movie>> PostMovie([FromBody] MovieCreateDTO movieCreateDTO)
         {
@@ -90,6 +112,11 @@ namespace MovieCharacterAPI.Controllers
             return CreatedAtAction("GetById", new { movieId = newMovie.MovieId }, movie);
         }
 
+        /// <summary>
+        /// Deletes a movie from the database
+        /// </summary>
+        /// <param name="movieId">id of the movie that needs to be deleted</param>
+        /// <returns></returns>
         [HttpDelete("{movieId}")]
         public async Task<ActionResult> DeleteMovie(int movieId)
         {
@@ -104,6 +131,12 @@ namespace MovieCharacterAPI.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Updates a movie
+        /// </summary>
+        /// <param name="movieId">Id of the movie that needs to be updated</param>
+        /// <param name="movie">A movie object which replaces the original movie object in the database</param>
+        /// <returns></returns>
         [HttpPut("{movieId}")]
         public async Task<ActionResult> UpdateMovie(int movieId, [FromBody] MovieEditDTO movie)
         {
@@ -129,7 +162,12 @@ namespace MovieCharacterAPI.Controllers
             return NoContent();
         }
 
-        // Update characters in movie
+        /// <summary>
+        /// Updates the characters in a movie
+        /// </summary>
+        /// <param name="movieId">id of the movie of which the characters need to be updated</param>
+        /// <param name="characterIds">a list of characterids which will replace the current characters associated with the movie</param>
+        /// <returns></returns>
         [HttpPut("UpdateCharacter/{movieId}")]
         public async Task<ActionResult> UpdateCharactersInMovie(int movieId, [FromBody] int[] characterIds)
         {

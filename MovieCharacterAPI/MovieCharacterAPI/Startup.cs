@@ -32,7 +32,7 @@ namespace MovieCharacterAPI
             services.AddAutoMapper(typeof(Startup)); //TODO: figure out function of this
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "MovieCharacterAPI", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "MovieCharacterAPI", Version = "v1" }); // TODO: edit this Swagger documentation
             });
         }
 
