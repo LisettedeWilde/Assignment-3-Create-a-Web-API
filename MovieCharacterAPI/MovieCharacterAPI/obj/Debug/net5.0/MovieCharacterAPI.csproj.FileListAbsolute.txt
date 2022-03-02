@@ -278,3 +278,5 @@ X:\Noroff\Noroff Assignments\Assignments - Backend .NET\Assignment 3 - Web API i
 X:\Noroff\Noroff Assignments\Assignments - Backend .NET\Assignment 3 - Web API in ASP.NET Core\Assignment-3-Create-a-Web-API\MovieCharacterAPI\MovieCharacterAPI\obj\Debug\net5.0\ref\MovieCharacterAPI.dll
 X:\Noroff\Noroff Assignments\Assignments - Backend .NET\Assignment 3 - Web API in ASP.NET Core\Assignment-3-Create-a-Web-API\MovieCharacterAPI\MovieCharacterAPI\obj\Debug\net5.0\MovieCharacterAPI.pdb
 X:\Noroff\Noroff Assignments\Assignments - Backend .NET\Assignment 3 - Web API in ASP.NET Core\Assignment-3-Create-a-Web-API\MovieCharacterAPI\MovieCharacterAPI\obj\Debug\net5.0\MovieCharacterAPI.genruntimeconfig.cache
+X:\Noroff\Noroff Assignments\Assignments - Backend .NET\Assignment 3 - Web API in ASP.NET Core\Assignment-3-Create-a-Web-API\MovieCharacterAPI\MovieCharacterAPI\bin\Debug\net5.0\MovieCharacterAPI.xml
+X:\Noroff\Noroff Assignments\Assignments - Backend .NET\Assignment 3 - Web API in ASP.NET Core\Assignment-3-Create-a-Web-API\MovieCharacterAPI\MovieCharacterAPI\obj\Debug\net5.0\MovieCharacterAPI.xml

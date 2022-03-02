@@ -15,7 +15,7 @@ using System.Net.Mime;
 namespace MovieCharacterAPI.Controllers
 {
     [Route("api/Movies")]
-    [ApiController] //TODO: edit Swagger documentation
+    [ApiController]
     [Produces(MediaTypeNames.Application.Json)]
     [Consumes(MediaTypeNames.Application.Json)]
     [ApiConventionType(typeof(DefaultApiConventions))]
@@ -70,7 +70,7 @@ namespace MovieCharacterAPI.Controllers
         /// </summary>
         /// <param name="movieId">The id of the movie of which the characters need to be fetched</param>
         /// <returns>A list of characters</returns>
-        [HttpGet("GetCharactersInMovie/{movieId}")]
+        [HttpGet("{movieId}/characters")]
         public async Task<ActionResult<IEnumerable<CharacterReadDTO>>> GetCharactersInMovie(int movieId)
         {
             Movie movie = await _context.Movie.Include(p => p.Characters).Where(p => p.MovieId == movieId).SingleAsync();
@@ -168,7 +168,7 @@ namespace MovieCharacterAPI.Controllers
         /// <param name="movieId">id of the movie of which the characters need to be updated</param>
         /// <param name="characterIds">a list of characterids which will replace the current characters associated with the movie</param>
         /// <returns></returns>
-        [HttpPut("UpdateCharacter/{movieId}")]
+        [HttpPut("{movieId}/characters")]
         public async Task<ActionResult> UpdateCharactersInMovie(int movieId, [FromBody] int[] characterIds)
         {
             var movieToUpdate = await _context.Movie.Include(m => m.Characters).Where(m => m.MovieId == movieId).FirstAsync();

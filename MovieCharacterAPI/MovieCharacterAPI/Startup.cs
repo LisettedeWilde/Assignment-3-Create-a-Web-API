@@ -9,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using MovieCharacterAPI.Models.Data;
+using System;
 
 namespace MovieCharacterAPI
 {
@@ -30,9 +31,24 @@ namespace MovieCharacterAPI
             options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))
             );
             services.AddAutoMapper(typeof(Startup)); //TODO: figure out function of this
-            services.AddSwaggerGen(c =>
+            services.AddSwaggerGen(c => // TODO: edit this Swagger documentation
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "MovieCharacterAPI", Version = "v1" }); // TODO: edit this Swagger documentation
+                c.SwaggerDoc("v1", new OpenApiInfo { 
+                    Title = "MovieCharacterAPI", 
+                    Version = "v1",
+                Description = "An ASP.Net Core Web API for a MovieDb",
+                Contact = new OpenApiContact()
+                {
+                    Name = "Lisette de Wilde",
+                    Email = string.Empty,
+                    Url = new Uri("https://linkedin.com/"),
+                },
+                License = new OpenApiLicense()
+                {
+                    Name = "Use under MIT",
+                    Url = new Uri("https://opensource.org/licenses/MIT"),
+                }
+                });
             });
         }
 

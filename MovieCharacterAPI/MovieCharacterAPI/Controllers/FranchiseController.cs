@@ -15,7 +15,7 @@ using System.Net.Mime;
 namespace MovieCharacterAPI.Controllers
 {
     [Route("api/Franchises")]
-    [ApiController] //TODO: edit Swagger documentation
+    [ApiController]
     [Produces(MediaTypeNames.Application.Json)]
     [Consumes(MediaTypeNames.Application.Json)]
     [ApiConventionType(typeof(DefaultApiConventions))]
@@ -66,7 +66,7 @@ namespace MovieCharacterAPI.Controllers
         /// </summary>
         /// <param name="franchiseId">A franchise id</param>
         /// <returns>A list of movies</returns>
-        [HttpGet("GetMoviesInFranchise/{franchiseId}")]
+        [HttpGet("{franchiseId}/movies")]
         public async Task<ActionResult<IEnumerable<MovieReadDTO>>> GetMoviesInFranchise(int franchiseId)
         {
             var franchise = await _context.Franchise.Include(f => f.Movies).Where(f => f.FranchiseId == franchiseId).SingleAsync();
@@ -86,7 +86,7 @@ namespace MovieCharacterAPI.Controllers
         /// </summary>
         /// <param name="franchiseId">A franchise id</param>
         /// <returns>A list of characters</returns>
-        [HttpGet("GetCharactersInFranchise/{franchiseId}")]
+        [HttpGet("{franchiseId}/characters")]
         public async Task<ActionResult<IEnumerable<CharacterReadDTO>>> GetCharactersInFranchise(int franchiseId)
         {
             var franchise = await _context.Franchise.Include(f => f.Movies).ThenInclude(m => m.Characters).Where(f => f.FranchiseId == franchiseId).SingleAsync();
@@ -192,7 +192,7 @@ namespace MovieCharacterAPI.Controllers
         /// <param name="franchiseId">Id of the franchise that needs to be updated</param>
         /// <param name="movieIds">A list of movieids which will replace the currect movies associated with the franchise</param>
         /// <returns></returns>
-        [HttpPut("UpdateMovies/{franchiseId}")]
+        [HttpPut("{franchiseId}/movies")]
         public async Task<ActionResult> UpdateMoviesInFranchise(int franchiseId, [FromBody] int[] movieIds)
         {
             var franchiseToUpdate = await _context.Franchise.Include(f => f.Movies).Where(f => f.FranchiseId == franchiseId).SingleAsync();

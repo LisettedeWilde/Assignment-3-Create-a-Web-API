@@ -13,7 +13,7 @@ using System.Net.Mime;
 namespace MovieCharacterAPI.Controllers
 {
     [Route("api/Characters")]
-    [ApiController] //TODO: edit Swagger documentation
+    [ApiController]
     [Produces(MediaTypeNames.Application.Json)]
     [Consumes(MediaTypeNames.Application.Json)]
     [ApiConventionType(typeof(DefaultApiConventions))]
