@@ -15,5 +15,7 @@ namespace MovieCharacterAPI.Models.DTOs.MovieDTOs
         public string Genre { get; set; }
         public string Picture { get; set; }
         public string Trailer { get; set; }
+        public string Franchise { get; set; }
+        public List<string> Characters { get; set; }
     }
 }

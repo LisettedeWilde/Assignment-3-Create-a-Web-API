@@ -37,7 +37,7 @@ namespace MovieCharacterAPI.Controllers
         public async Task<ActionResult<IEnumerable<MovieReadDTO>>> GetAllMovies()
         {
             // get all movies from database
-            var movies = await _context.Movie.ToListAsync();
+            var movies = await _context.Movie.Include(m => m.Characters).Include(f => f.Franchise).ToListAsync();
 
             // convert movies object to movieReadDTO
             var readMovies = _mapper.Map<List<MovieReadDTO>>(movies);

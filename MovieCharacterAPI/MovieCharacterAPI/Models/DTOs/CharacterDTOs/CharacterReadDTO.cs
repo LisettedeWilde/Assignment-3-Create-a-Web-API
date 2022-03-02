@@ -14,5 +14,6 @@ namespace MovieCharacterAPI.Models.DTOs.CharacterDTOs
         public string Gender { get; set; }
         public string Alias { get; set; }
         public string Picture { get; set; }
+        public List<string> Movies { get; set; }
     }
 }

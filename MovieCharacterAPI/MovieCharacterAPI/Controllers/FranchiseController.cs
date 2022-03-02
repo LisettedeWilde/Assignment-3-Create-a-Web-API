@@ -36,7 +36,7 @@ namespace MovieCharacterAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<FranchiseReadDTO>>> GetAllFranchises()
         {
-            var franchises = await _context.Franchise.ToListAsync();
+            var franchises = await _context.Franchise.Include(f => f.Movies).ToListAsync();
 
             var readFranchises = _mapper.Map<List<FranchiseReadDTO>>(franchises);
 
