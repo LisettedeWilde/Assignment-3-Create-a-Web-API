@@ -126,26 +126,5 @@ namespace MovieCharacterAPI.Models.Data
             };
             return SeedFranchise;
         }
-
-        public void GetRelations()
-        {
-            Character c1 = _context.Character.Find(1);
-            Character c2 = _context.Character.Find(2);
-            Character c3 = _context.Character.Find(3);
-            Character c4 = _context.Character.Find(4);
-            Character c5 = _context.Character.Find(5);
-            Movie m1 = _context.Movie.Find(1);
-            Movie m2 = _context.Movie.Find(2);
-            Movie m3 = _context.Movie.Find(3);
-
-
-            c1.Movies = new List<Movie>{ m2 };
-            c2.Movies = new List<Movie> { m1 };
-            c3.Movies = new List<Movie> { m1 };
-            c4.Movies = new List<Movie> { m1 };
-            c5.Movies = new List<Movie> { m3 };
-
-            _context.SaveChanges();
-        }
     }
 }

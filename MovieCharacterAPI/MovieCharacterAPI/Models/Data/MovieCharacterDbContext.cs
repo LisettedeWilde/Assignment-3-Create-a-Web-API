@@ -16,11 +16,13 @@ namespace MovieCharacterAPI.Models.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // Seed Franchise, Character and Movie tables
             modelBuilder.Entity<Franchise>().HasData(SeedHelper.GetFranchiseSeeds());
             modelBuilder.Entity<Character>().HasData(SeedHelper.GetCharacterSeeds());
             modelBuilder.Entity<Movie>().HasData(SeedHelper.GetMovieSeeds());
 
-            modelBuilder.Entity<Character>() // TODO: put in method in seedhelper class
+            // Seed CharacterMovie table
+            modelBuilder.Entity<Character>()
                 .HasMany(p => p.Movies)
                 .WithMany(m => m.Characters)
                 .UsingEntity<Dictionary<string, object>>(

@@ -91,7 +91,7 @@ namespace MovieCharacterAPI.Controllers
             // Convert the character object to CharacterReadDTO object
             var newCharacter = _mapper.Map<CharacterReadDTO>(character);
             
-            // TODO: figure out what to write here
+            // Returns the added character
             return CreatedAtAction("GetById", new { CharacterId = newCharacter.CharacterId }, character);
         }
 
@@ -140,7 +140,7 @@ namespace MovieCharacterAPI.Controllers
             // Convert the given CharacterEditDTO to a character object
             Character domainCharacter = _mapper.Map<Character>(character);
 
-            // TODO: figure out what to write here
+            // Mark all the properties of the entity as modified, so that all the property values will be sent to the database when SaveChanges is called
             _context.Entry(domainCharacter).State = EntityState.Modified;
 
             try

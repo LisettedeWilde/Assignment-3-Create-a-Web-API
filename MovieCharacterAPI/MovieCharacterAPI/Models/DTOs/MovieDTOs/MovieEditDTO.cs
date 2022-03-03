@@ -2,7 +2,7 @@
 
 namespace MovieCharacterAPI.Models.DTOs.MovieDTOs
 {
-    public class MovieEditDTO // TODO: add maxlength
+    public class MovieEditDTO
     {
         public int MovieId { get; set; }
         [MaxLength(200)]

@@ -117,7 +117,7 @@ namespace MovieCharacterAPI.Controllers
             // Convert the movie object to MovieReadDTO object
             var newMovie = _mapper.Map<MovieReadDTO>(movie);
 
-            // TODO: figure out what to write here
+            // Returns the added movie
             return CreatedAtAction("GetById", new { movieId = newMovie.MovieId }, movie);
         }
 
@@ -166,7 +166,7 @@ namespace MovieCharacterAPI.Controllers
             // Convert the given MovieEditDTO to a movie object
             Movie domainMovie = _mapper.Map<Movie>(movie);
 
-            // TODO: figure out what to write here
+            /// Mark all the properties of the entity as modified, so that all the property values will be sent to the database when SaveChanges is called
             _context.Entry(domainMovie).State = EntityState.Modified;
 
             try

@@ -55,7 +55,7 @@ namespace MovieCharacterAPI.Controllers
         public async Task<ActionResult<FranchiseReadDTO>> GetById(int franchiseId)
         {
             // Fetch the franchise that matches the given franchiseId from the database
-            var franchise = await _context.Franchise.Include(f => f.Movies).Where(f => f.FranchiseId == franchiseId).SingleAsync(); // TODO: check if this works
+            var franchise = await _context.Franchise.Include(f => f.Movies).Where(f => f.FranchiseId == franchiseId).SingleAsync();
 
             // Check whether a franchise has been returned from the query
             if (franchise == null)
@@ -155,7 +155,7 @@ namespace MovieCharacterAPI.Controllers
             // Convert the franchise object to FranchiseReadDTO object
             var newFranchise = _mapper.Map<FranchiseReadDTO>(franchise);
 
-            // TODO: figure out what to write here
+            // Returns the added franchise
             return CreatedAtAction("GetById", new { franchiseId = newFranchise.FranchiseId }, franchise);
         }
 
@@ -203,6 +203,8 @@ namespace MovieCharacterAPI.Controllers
 
             // Convert the given franchiseEditDTO to a franchise object
             Franchise domainFranchise = _mapper.Map<Franchise>(franchise);
+
+            // Mark all the properties of the entity as modified, so that all the property values will be sent to the database when SaveChanges is called
             _context.Entry(domainFranchise).State = EntityState.Modified;
 
             try
