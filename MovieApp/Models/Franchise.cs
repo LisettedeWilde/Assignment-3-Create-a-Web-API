@@ -10,7 +10,11 @@ namespace MovieApp.Models
 {
     [Table("Franchise")]
     public class Franchise
-    {
+    {        
+        /// <summary>
+        /// Defining table for franchise.
+        /// </summary>
+        
         [Key]
         public int Id { get; set; }
         [Required]

@@ -10,6 +10,7 @@ namespace MovieApp.Helpers
   
         public class ConnectionStringHelper
         {
+            //connecting to sql
             public static string GetConnectionString()
             {
                 SqlConnectionStringBuilder sqlConnectionStringBuilder = new SqlConnectionStringBuilder();

@@ -10,7 +10,11 @@ namespace MovieApp.Models
 {
     [Table("Character")]
     public class Character
-    {
+    {        
+        /// <summary>
+        /// Defining table for characters.
+        /// </summary>
+      
         [Key]
         public int Id { get; set; }
         [Required]
