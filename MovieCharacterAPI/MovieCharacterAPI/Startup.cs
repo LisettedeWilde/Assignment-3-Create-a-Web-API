@@ -30,7 +30,7 @@ namespace MovieCharacterAPI
             options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))
             );
             services.AddAutoMapper(typeof(Startup));
-            services.AddSwaggerGen(c => // TODO: edit this Swagger documentation
+            services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { 
                     Title = "MovieCharacterAPI", 
