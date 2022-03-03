@@ -54,8 +54,8 @@ namespace MovieCharacterAPI.Controllers
         public async Task<ActionResult<MovieReadDTO>> GetById(int movieId)
         {
             // Fetch the movie that matches the given movieId from the database, including its characters and franchise
-            //var movie = await _context.Movie.FindAsync(movieId); 
-            var movie = await _context.Movie.Include(m => m.Characters).Include(f => f.Franchise).SingleAsync(); // TODO: Check if this works
+            var movie = await _context.Movie.Include(m => m.Characters).Include(f => f.Franchise).Where(m => m.MovieId == movieId).SingleAsync(); 
+
             // Check whether a movie object had been returned from the query
             if (movie == null)
                 return NotFound();
