@@ -60,6 +60,13 @@ git clone https://github.com/lisettedewilde/Assignment-3-Create-a-Web-API.git
 
 2. Open project with Visual Studio
 
+3. Using Entity Framework Core, run the following commands via the Package Manager Console:
+```add-migration```  and  ```update-database```
+
+4. Change the datasource of the  ```connectionstringbuilder``` in appsettings.json to connect with the server. 
+
+
+
 
 ## Contributors
 
