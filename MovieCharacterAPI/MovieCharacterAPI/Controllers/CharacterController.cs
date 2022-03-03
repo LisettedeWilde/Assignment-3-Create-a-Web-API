@@ -53,7 +53,7 @@ namespace MovieCharacterAPI.Controllers
         public async Task<ActionResult<CharacterReadDTO>> GetById(int characterId)
         {
             // Fetch the character that matches the given characterId from the database, including their movies
-            var character = await _context.Character.Include(c => c.Movies).Where(c => c.CharacterId == characterId).SingleAsync();
+            var character = await _context.Character.Include(c => c.Movies).FirstOrDefaultAsync(c => c.CharacterId == characterId);
 
             // Check whether there is a character at the id location in the database
             if (character == null)

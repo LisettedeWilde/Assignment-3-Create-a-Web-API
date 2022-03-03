@@ -55,7 +55,7 @@ namespace MovieCharacterAPI.Controllers
         public async Task<ActionResult<FranchiseReadDTO>> GetById(int franchiseId)
         {
             // Fetch the franchise that matches the given franchiseId from the database
-            var franchise = await _context.Franchise.Include(f => f.Movies).Where(f => f.FranchiseId == franchiseId).SingleAsync();
+            var franchise = await _context.Franchise.Include(f => f.Movies).FirstOrDefaultAsync(f => f.FranchiseId == franchiseId);
 
             // Check whether a franchise has been returned from the query
             if (franchise == null)
@@ -77,7 +77,7 @@ namespace MovieCharacterAPI.Controllers
         public async Task<ActionResult<IEnumerable<MovieReadDTO>>> GetMoviesInFranchise(int franchiseId)
         {
             // Fetch the franchise that matches the given franchiseId from the database, including its movies
-            var franchise = await _context.Franchise.Include(f => f.Movies).Where(f => f.FranchiseId == franchiseId).SingleAsync();
+            var franchise = await _context.Franchise.Include(f => f.Movies).ThenInclude(m => m.Characters).FirstOrDefaultAsync(f => f.FranchiseId == franchiseId);
 
             // Check whether a franchise has been returned from the query
             if (franchise == null)
@@ -102,7 +102,7 @@ namespace MovieCharacterAPI.Controllers
         public async Task<ActionResult<IEnumerable<CharacterReadDTO>>> GetCharactersInFranchise(int franchiseId)
         {
             // Fetch the franchise that matches the given franchiseId from the database, including its movies and characters
-            var franchise = await _context.Franchise.Include(f => f.Movies).ThenInclude(m => m.Characters).Where(f => f.FranchiseId == franchiseId).SingleAsync();
+            var franchise = await _context.Franchise.Include(f => f.Movies).ThenInclude(m => m.Characters).FirstOrDefaultAsync(f => f.FranchiseId == franchiseId);
 
             // Check whether a franchise has been returned from the query
             if (franchise == null)
@@ -234,7 +234,7 @@ namespace MovieCharacterAPI.Controllers
         public async Task<ActionResult> UpdateMoviesInFranchise(int franchiseId, [FromBody] int[] movieIds)
         {
             // Fetch the franchise that matches the given franchiseId from the database, including its movies and franchiseId
-            var franchiseToUpdate = await _context.Franchise.Include(f => f.Movies).Where(f => f.FranchiseId == franchiseId).SingleAsync();
+            var franchiseToUpdate = await _context.Franchise.Include(f => f.Movies).FirstOrDefaultAsync(f => f.FranchiseId == franchiseId);
 
             // Check whether a franchise object had been returned from the query
             if (franchiseToUpdate == null)

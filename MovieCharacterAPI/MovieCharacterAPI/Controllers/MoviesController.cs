@@ -54,7 +54,7 @@ namespace MovieCharacterAPI.Controllers
         public async Task<ActionResult<MovieReadDTO>> GetById(int movieId)
         {
             // Fetch the movie that matches the given movieId from the database, including its characters and franchise
-            var movie = await _context.Movie.Include(m => m.Characters).Include(f => f.Franchise).Where(m => m.MovieId == movieId).SingleAsync(); 
+            var movie = await _context.Movie.Include(m => m.Characters).Include(f => f.Franchise).FirstOrDefaultAsync(m => m.MovieId == movieId);
 
             // Check whether a movie object had been returned from the query
             if (movie == null)
@@ -76,7 +76,7 @@ namespace MovieCharacterAPI.Controllers
         public async Task<ActionResult<IEnumerable<CharacterReadDTO>>> GetCharactersInMovie(int movieId)
         {
             // Fetch the movie that matches the given movieId from the database, including its characters
-            Movie movie = await _context.Movie.Include(p => p.Characters).Where(p => p.MovieId == movieId).SingleAsync();
+            Movie movie = await _context.Movie.Include(p => p.Characters).FirstOrDefaultAsync(p => p.MovieId == movieId);
 
             // Check whether a movie object had been returned from the query
             if (movie == null)
@@ -196,7 +196,7 @@ namespace MovieCharacterAPI.Controllers
         public async Task<ActionResult> UpdateCharactersInMovie(int movieId, [FromBody] int[] characterIds)
         {
             // Fetch the movie that matches the given movieId from the database, including its characters
-            var movieToUpdate = await _context.Movie.Include(m => m.Characters).Where(m => m.MovieId == movieId).FirstAsync();
+            var movieToUpdate = await _context.Movie.Include(m => m.Characters).FirstOrDefaultAsync(m => m.MovieId == movieId);
 
             // Check whether a movie object had been returned from the query
             if (movieToUpdate == null)
