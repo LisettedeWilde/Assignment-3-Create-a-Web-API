@@ -1,12 +1,9 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using MovieCharacterAPI.Models.Data;
 using System;
@@ -32,7 +29,7 @@ namespace MovieCharacterAPI
             services.AddDbContext<MovieCharacterDbContext>(options =>
             options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))
             );
-            services.AddAutoMapper(typeof(Startup)); //TODO: figure out function of this
+            services.AddAutoMapper(typeof(Startup));
             services.AddSwaggerGen(c => // TODO: edit this Swagger documentation
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { 
@@ -43,7 +40,7 @@ namespace MovieCharacterAPI
                 {
                     Name = "Lisette de Wilde",
                     Email = string.Empty,
-                    Url = new Uri("https://linkedin.com/"),
+                    Url = new Uri("https://github.com/LisettedeWilde"),
                 },
                 License = new OpenApiLicense()
                 {

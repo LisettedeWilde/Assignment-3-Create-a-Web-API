@@ -1,10 +1,7 @@
 ﻿using AutoMapper;
 using MovieCharacterAPI.Models.DTOs.MovieDTOs;
 using MovieCharacterAPI.Models.Domain;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace MovieCharacterAPI.Profiles
 {
@@ -15,10 +12,10 @@ namespace MovieCharacterAPI.Profiles
             CreateMap<Movie, MovieReadDTO>()
                 .ForMember(m => m.Characters,
                 opt => opt.MapFrom(c => c.Characters
-                .Select(c => c.Name).ToArray()))
+                .Select(c => c.CharacterId).ToArray()))
                 .ForMember(m => m.Franchise,
-                opt => opt.MapFrom(f => f.Franchise.Name
-                .ToString()));
+                opt => opt.MapFrom(f => f.Franchise.FranchiseId
+                ));
             CreateMap<MovieCreateDTO, Movie>();
             CreateMap<MovieEditDTO, Movie>();
         }

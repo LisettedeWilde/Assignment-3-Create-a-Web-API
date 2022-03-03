@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -36,13 +35,13 @@ namespace MovieCharacterAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<MovieReadDTO>>> GetAllMovies()
         {
-            // get all movies from database
+            // Fetch all movies, including their characters and their associated franchise from the database
             var movies = await _context.Movie.Include(m => m.Characters).Include(f => f.Franchise).ToListAsync();
 
-            // convert movies object to movieReadDTO
+            // Convert the movie objects to movieReadDTO objects
             var readMovies = _mapper.Map<List<MovieReadDTO>>(movies);
 
-            // return movies
+            // Return the list of movies
             return Ok(readMovies);
         }
 
@@ -54,14 +53,17 @@ namespace MovieCharacterAPI.Controllers
         [HttpGet("{movieId}")]
         public async Task<ActionResult<MovieReadDTO>> GetById(int movieId)
         {
-            //get movie from database by movieId
-            var movie = await _context.Movie.FindAsync(movieId);
-            // check whether a movie object had been returned from the query
+            // Fetch the movie that matches the given movieId from the database, including its characters and franchise
+            //var movie = await _context.Movie.FindAsync(movieId); 
+            var movie = await _context.Movie.Include(m => m.Characters).Include(f => f.Franchise).SingleAsync(); // TODO: Check if this works
+            // Check whether a movie object had been returned from the query
             if (movie == null)
                 return NotFound();
-            // convert movie object to movieReadDTO
+
+            // Convert movie object to movieReadDTO
             var movieReadDTO = _mapper.Map<MovieReadDTO>(movie);
-            // return movie
+
+            // Return the movie
             return Ok(movieReadDTO);
         }
 
@@ -73,15 +75,20 @@ namespace MovieCharacterAPI.Controllers
         [HttpGet("{movieId}/characters")]
         public async Task<ActionResult<IEnumerable<CharacterReadDTO>>> GetCharactersInMovie(int movieId)
         {
+            // Fetch the movie that matches the given movieId from the database, including its characters
             Movie movie = await _context.Movie.Include(p => p.Characters).Where(p => p.MovieId == movieId).SingleAsync();
 
+            // Check whether a movie object had been returned from the query
             if (movie == null)
                 return NotFound();
 
+            // Get the list of characters from the movie
             var characters = movie.Characters;
 
+            // Convert the character objects to CharacterReadDTO objects
             var readCharacters = _mapper.Map<List<CharacterReadDTO>>(characters);
 
+            // Return the list of characters
             return Ok(readCharacters);
         }
 
@@ -93,22 +100,24 @@ namespace MovieCharacterAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<Movie>> PostMovie([FromBody] MovieCreateDTO movieCreateDTO)
         {
-            // convert movieCreateDTO to movie object
+            // convert the given movieCreateDTO to movie object
             var movie = _mapper.Map<Movie>(movieCreateDTO);
 
             try
             {
-                // add movie to database and save changes
-                _context.Movie.Add(movie);
+                // Add movie to database and save changes
+                await _context.Movie.AddAsync(movie);
                 await _context.SaveChangesAsync();
             }
-            catch // TODO: add exception
+            catch
             {
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
 
+            // Convert the movie object to MovieReadDTO object
             var newMovie = _mapper.Map<MovieReadDTO>(movie);
 
+            // TODO: figure out what to write here
             return CreatedAtAction("GetById", new { movieId = newMovie.MovieId }, movie);
         }
 
@@ -120,13 +129,23 @@ namespace MovieCharacterAPI.Controllers
         [HttpDelete("{movieId}")]
         public async Task<ActionResult> DeleteMovie(int movieId)
         {
+            // Fetch the movie that matches the given movieId from the database
             var movie = await _context.Movie.FindAsync(movieId);
 
+            // Check whether a movie object had been returned from the query
             if (movie == null)
                 return NotFound();
 
-            _context.Movie.Remove(movie);
-            await _context.SaveChangesAsync();
+            try
+            {
+                // Delete the movie from the database
+                _context.Movie.Remove(movie);
+                await _context.SaveChangesAsync();
+            }
+            catch
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
 
             return NoContent();
         }
@@ -140,19 +159,24 @@ namespace MovieCharacterAPI.Controllers
         [HttpPut("{movieId}")]
         public async Task<ActionResult> UpdateMovie(int movieId, [FromBody] MovieEditDTO movie)
         {
+            // Check if the given movieId matches the given Movie object
             if (movieId != movie.MovieId)
                 return BadRequest();
 
+            // Convert the given MovieEditDTO to a movie object
             Movie domainMovie = _mapper.Map<Movie>(movie);
 
+            // TODO: figure out what to write here
             _context.Entry(domainMovie).State = EntityState.Modified;
 
             try
             {
+                // Update the database
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
+                // Check whether a movie object had been returned from the query
                 if (domainMovie == null)
                     return NotFound();
                 else
@@ -171,11 +195,14 @@ namespace MovieCharacterAPI.Controllers
         [HttpPut("{movieId}/characters")]
         public async Task<ActionResult> UpdateCharactersInMovie(int movieId, [FromBody] int[] characterIds)
         {
+            // Fetch the movie that matches the given movieId from the database, including its characters
             var movieToUpdate = await _context.Movie.Include(m => m.Characters).Where(m => m.MovieId == movieId).FirstAsync();
 
+            // Check whether a movie object had been returned from the query
             if (movieToUpdate == null)
                 return NotFound();
 
+            // Create a list of character objects based on the given list of CharacterIds
             List<Character> characters = new();
             foreach (int characterId in characterIds)
             {
@@ -185,10 +212,12 @@ namespace MovieCharacterAPI.Controllers
                 characters.Add(character);
             }
 
+            // Set the movies characters to the new list of characters
             movieToUpdate.Characters = characters;
 
             try
             {
+                // Update the database
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)

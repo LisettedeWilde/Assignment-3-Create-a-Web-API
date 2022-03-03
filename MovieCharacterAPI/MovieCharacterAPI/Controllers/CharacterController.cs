@@ -6,9 +6,9 @@ using MovieCharacterAPI.Models.Data;
 using MovieCharacterAPI.Models.DTOs.CharacterDTOs;
 using MovieCharacterAPI.Models.Domain;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Net.Mime;
+using System.Linq;
 
 namespace MovieCharacterAPI.Controllers
 {
@@ -34,10 +34,13 @@ namespace MovieCharacterAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CharacterReadDTO>>> GetAllCharacters()
         {
+            // Fetch all characters, including their movies from the database
             var characters = await _context.Character.Include(c => c.Movies).ToListAsync();
 
+            // Convert the character objects to CharacterReadDTO objects
             var readCharacters = _mapper.Map<List<CharacterReadDTO>>(characters);
 
+            // return the list of characters
             return Ok(readCharacters);
         }
 
@@ -49,13 +52,17 @@ namespace MovieCharacterAPI.Controllers
         [HttpGet("{characterId}")]
         public async Task<ActionResult<CharacterReadDTO>> GetById(int characterId)
         {
-            var character = await _context.Character.FindAsync(characterId);
+            // Fetch the character that matches the given characterId from the database, including their movies
+            var character = await _context.Character.Include(c => c.Movies).Where(c => c.CharacterId == characterId).SingleAsync();
 
+            // Check whether there is a character at the id location in the database
             if (character == null)
                 return NotFound();
 
+            // Convert the character object to CharacterReadDTO object
             var characterReadDTO = _mapper.Map<CharacterReadDTO>(character);
 
+            // return the Character
             return Ok(characterReadDTO);
         }
 
@@ -67,20 +74,24 @@ namespace MovieCharacterAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<Character>> PostCharacter([FromBody] CharacterCreateDTO characterCreateDTO)
         {
+            // Convert given CharacterCreateDTO to character object
             var character = _mapper.Map<Character>(characterCreateDTO);
 
             try
             {
-                _context.Character.Add(character);
+                // Add the character to the database
+                await _context.Character.AddAsync(character);
                 await _context.SaveChangesAsync();
             }
-            catch //TODO: add exception
+            catch
             {
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
 
+            // Convert the character object to CharacterReadDTO object
             var newCharacter = _mapper.Map<CharacterReadDTO>(character);
             
+            // TODO: figure out what to write here
             return CreatedAtAction("GetById", new { CharacterId = newCharacter.CharacterId }, character);
         }
 
@@ -90,16 +101,25 @@ namespace MovieCharacterAPI.Controllers
         /// <param name="characterId">Id of the character that needs to be deleted</param>
         /// <returns></returns>
         [HttpDelete("{characterId}")]
-        public async Task<ActionResult> DeleteCharacter(int characterId) // TODO: Check DTO
-            //TODO: check if foreign keys are not deleted
+        public async Task<ActionResult> DeleteCharacter(int characterId)
         {
+            // Fetch the character that matches the given characterId from the database
             var character = await _context.Character.FindAsync(characterId);
 
+            // Check whether there is a character at the id location in the database
             if (character == null)
                 return NotFound();
 
-            _context.Character.Remove(character);
-            await _context.SaveChangesAsync();
+            try
+            {
+                // Delete the character from the database
+                _context.Character.Remove(character);
+                await _context.SaveChangesAsync();
+            }
+            catch
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
 
             return NoContent();
         }
@@ -113,19 +133,24 @@ namespace MovieCharacterAPI.Controllers
         [HttpPut("{characterId}")]
         public async Task<ActionResult> UpdateCharacter(int characterId, [FromBody] CharacterEditDTO character)
         {
+            // Check if the given characterId matches the given Character object
             if (characterId != character.CharacterId)
                 return BadRequest();
 
+            // Convert the given CharacterEditDTO to a character object
             Character domainCharacter = _mapper.Map<Character>(character);
 
+            // TODO: figure out what to write here
             _context.Entry(domainCharacter).State = EntityState.Modified;
 
             try
             {
+                // Update the database
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
+                // Check whether there is a character at the id location in the database
                 if (domainCharacter == null)
                     return NotFound();
                 else

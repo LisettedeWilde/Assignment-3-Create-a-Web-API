@@ -36,10 +36,13 @@ namespace MovieCharacterAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<FranchiseReadDTO>>> GetAllFranchises()
         {
+            // Fetch all franchises, including their movies from the database
             var franchises = await _context.Franchise.Include(f => f.Movies).ToListAsync();
 
+            // Convert the franchise objects to FranchiseReadDTO objects
             var readFranchises = _mapper.Map<List<FranchiseReadDTO>>(franchises);
 
+            // Return the list of movies
             return Ok(readFranchises);
         }
 
@@ -51,13 +54,17 @@ namespace MovieCharacterAPI.Controllers
         [HttpGet("{franchiseId}")]
         public async Task<ActionResult<FranchiseReadDTO>> GetById(int franchiseId)
         {
-            var franchise = await _context.Franchise.FindAsync(franchiseId);
+            // Fetch the franchise that matches the given franchiseId from the database
+            var franchise = await _context.Franchise.Include(f => f.Movies).Where(f => f.FranchiseId == franchiseId).SingleAsync(); // TODO: check if this works
 
+            // Check whether a franchise has been returned from the query
             if (franchise == null)
                 return NotFound();
            
+            // Convert franchise object to franchiseReadDTO
             var franchiseReadDTO = _mapper.Map<FranchiseReadDTO>(franchise);
 
+            // Return the franchise
             return Ok(franchiseReadDTO);
         }
 
@@ -69,15 +76,20 @@ namespace MovieCharacterAPI.Controllers
         [HttpGet("{franchiseId}/movies")]
         public async Task<ActionResult<IEnumerable<MovieReadDTO>>> GetMoviesInFranchise(int franchiseId)
         {
+            // Fetch the franchise that matches the given franchiseId from the database, including its movies
             var franchise = await _context.Franchise.Include(f => f.Movies).Where(f => f.FranchiseId == franchiseId).SingleAsync();
 
+            // Check whether a franchise has been returned from the query
             if (franchise == null)
                 return NotFound();
 
+            // Get the list of movies from the franchise
             var movies = franchise.Movies;
 
+            // Convert the movie objects to MovieReadDTO object
             var readMovies = _mapper.Map<List<MovieReadDTO>>(movies);
 
+            // Return the list of movies
             return Ok(readMovies);
         }
 
@@ -89,13 +101,17 @@ namespace MovieCharacterAPI.Controllers
         [HttpGet("{franchiseId}/characters")]
         public async Task<ActionResult<IEnumerable<CharacterReadDTO>>> GetCharactersInFranchise(int franchiseId)
         {
+            // Fetch the franchise that matches the given franchiseId from the database, including its movies and characters
             var franchise = await _context.Franchise.Include(f => f.Movies).ThenInclude(m => m.Characters).Where(f => f.FranchiseId == franchiseId).SingleAsync();
 
+            // Check whether a franchise has been returned from the query
             if (franchise == null)
                 return NotFound();
 
+            // Get the list of movies from the franchise
             var movies = franchise.Movies;
 
+            // For each movie in the franchise, get its characters and add it to a list
             List<Character> characters = new List<Character>();
             foreach (Movie movie in movies)
             {
@@ -107,8 +123,10 @@ namespace MovieCharacterAPI.Controllers
                 }    
             }
 
+            // Convert the character objects to CharacterReadDTO object
             var readCharacters = _mapper.Map<List<CharacterReadDTO>>(characters);
 
+            // Return the list of characters
             return Ok(readCharacters);
         }
 
@@ -120,20 +138,24 @@ namespace MovieCharacterAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<Franchise>> PostFranchise([FromBody] FranchiseCreateDTO franchiseCreateDTO)
         {
+            // Convert the given franchiseCreateDTO to franchise object
             var franchise = _mapper.Map<Franchise>(franchiseCreateDTO);
 
             try
             {
-                _context.Franchise.Add(franchise);
+                // Add the franchise to the database and save changes
+                await _context.Franchise.AddAsync(franchise);
                 await _context.SaveChangesAsync();
             }
-            catch //TODO: add exception
+            catch
             {
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
 
+            // Convert the franchise object to FranchiseReadDTO object
             var newFranchise = _mapper.Map<FranchiseReadDTO>(franchise);
 
+            // TODO: figure out what to write here
             return CreatedAtAction("GetById", new { franchiseId = newFranchise.FranchiseId }, franchise);
         }
 
@@ -145,13 +167,23 @@ namespace MovieCharacterAPI.Controllers
         [HttpDelete("{franchiseId}")]
         public async Task<ActionResult> DeleteFranchise(int franchiseId)
         {
+            // Fetch the franchise that matches the given franchiseId from the database
             var franchise = await _context.Franchise.FindAsync(franchiseId);
 
+            // Check whether a franchise object had been returned from the query
             if (franchise == null)
                 return NotFound();
 
-            _context.Franchise.Remove(franchise);
-            await _context.SaveChangesAsync();
+            try
+            {
+                // Delete the franchise from the database
+                _context.Franchise.Remove(franchise);
+                await _context.SaveChangesAsync();
+            }
+            catch
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
 
             return NoContent();
         }
@@ -165,18 +197,22 @@ namespace MovieCharacterAPI.Controllers
         [HttpPut("{franchiseId}")]
         public async Task<ActionResult> UpdateFranchise(int franchiseId, [FromBody] FranchiseEditDTO franchise)
         {
+            // Check if the given franchiseId matches the given Franchise object
             if (franchiseId != franchise.FranchiseId)
                 return BadRequest();
 
+            // Convert the given franchiseEditDTO to a franchise object
             Franchise domainFranchise = _mapper.Map<Franchise>(franchise);
             _context.Entry(domainFranchise).State = EntityState.Modified;
 
             try
             {
+                // Update the database
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
+                // Check whether a franchise object had been returned from the query
                 if (domainFranchise == null)
                     return NotFound();
                 else
@@ -195,11 +231,14 @@ namespace MovieCharacterAPI.Controllers
         [HttpPut("{franchiseId}/movies")]
         public async Task<ActionResult> UpdateMoviesInFranchise(int franchiseId, [FromBody] int[] movieIds)
         {
+            // Fetch the franchise that matches the given franchiseId from the database, including its movies and franchiseId
             var franchiseToUpdate = await _context.Franchise.Include(f => f.Movies).Where(f => f.FranchiseId == franchiseId).SingleAsync();
 
+            // Check whether a franchise object had been returned from the query
             if (franchiseToUpdate == null)
                 return NotFound();
 
+            // Create a list of movie objects based on the given list of movieIds
             List<Movie> movies = new();
             foreach (int movieId in movieIds)
             {
@@ -209,10 +248,12 @@ namespace MovieCharacterAPI.Controllers
                 movies.Add(movie);
             }
 
+            // Set the franchise movies to the new list of movies
             franchiseToUpdate.Movies = movies;
 
             try
             {
+                // Update the database
                 await _context.SaveChangesAsync();
             }
             catch
